@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <EditText
+            android:hint="昵称"
+            android:layout_width="100dp"
+            android:textSize="20sp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:hint=""
+            android:layout_width="match_parent"
+            android:textSize="20sp"
+            android:inputType="textMultiLine"
+            android:minLines="5"
+            android:gravity="top"
+            android:layout_height="100dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text="添加照片"
+                android:layout_width="100dp"
+                android:layout_height="40dp" />
+            <Button
+                android:text="发布"
+                android:layout_width="100dp"
+                android:layout_height="40dp" />
+        </LinearLayout>
+        <GridView
+            android:numColumns="4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </GridView>
+
+
+
+</LinearLayout>

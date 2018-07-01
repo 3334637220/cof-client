@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">cof</string>
+    <string name="diminutive">昵称</string>
+    <string name="text_content">文本内容</string>
+    <string name="select_pic">选择图片</string>
+</resources>
