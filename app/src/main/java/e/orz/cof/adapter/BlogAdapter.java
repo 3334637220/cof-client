@@ -52,9 +52,15 @@ public class BlogAdapter extends BaseAdapter {
         TextView name = view.findViewById(R.id.tv_name);
         TextView textContent = view.findViewById(R.id.tv_content);
         GridView gridView = view.findViewById(R.id.gv_image);
-        Glide.with(view.getContext())
-                .load(NetUtil.BASE_URL + blogList.get(i).getFaceUrl())
-                .into(ivFace);
+        TextView time = view.findViewById(R.id.tv_time);
+        if(blogList.get(i).getFaceUrl().isEmpty()){
+            ivFace.setImageResource(R.drawable.pic);
+        }else{
+            Glide.with(view.getContext())
+                    .load(NetUtil.BASE_URL + blogList.get(i).getFaceUrl())
+                    .into(ivFace);
+        }
+        time.setText(blogList.get(i).getTime());
         name.setText(blogList.get(i).getUserName());
         textContent.setText(blogList.get(i).getText());
         List<String> pictureList = blogList.get(i).getPictures();

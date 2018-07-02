@@ -19,12 +19,14 @@
             android:layout_height="70dp" />
         <EditText
             android:id="@+id/et_userName"
+            android:textColorHint="@color/colorGray"
             android:hint="用户名"
             android:layout_width="300dp"
             android:layout_marginBottom="50dp"
             android:layout_height="match_parent" />
         <EditText
             android:id="@+id/et_password"
+            android:textColorHint="@color/colorGray"
             android:hint="密码"
             android:layout_width="300dp"
             android:layout_marginBottom="30dp"

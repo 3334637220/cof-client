@@ -38,8 +38,8 @@ public class MainActivity extends Activity {
     private ListView listView;
     private ImageView ivExit;
     private ImageView ivPublish;
-    List<Blog> blogList;
-
+    private List<Blog> blogList;
+    private User user;
     private NoLeakHandler handler;
 
     @Override
@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         ivExit.setOnClickListener(new IvExitListener());
         ivPublish.setOnClickListener(new IvPublishListener());
         blogList = new ArrayList<>();
-
+        user = (User)getIntent().getSerializableExtra("user");
         final BlogAdapter blogAdapter = new BlogAdapter(this, blogList);
         listView.setAdapter(blogAdapter);
 
@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
                 case LOAD_SUCCESS:
                     try {
                         JSONArray ja = new JSONArray(msg.obj.toString());
-                        for(int i=0;i<ja.length();i++){
+                        for(int i=ja.length()-1;i>=0;i--){
                             JSONObject jo = ja.getJSONObject(i);
                             Blog blog = new Blog();
                             blog.setBlogId(jo.getInt("blogId"));
@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
                             blog.setText(jo.getString("text"));
                             blog.setUpNum(jo.getInt("upNum"));
                             blog.setTime(jo.getString("time"));
+                            blog.setFaceUrl(jo.getString("faceUrl"));
                             JSONArray pictureJa = jo.getJSONArray("pictures");
                             ArrayList<String> pictures = new ArrayList<>();
                             for(int j=0;j<pictureJa.length();j++){
@@ -144,6 +145,9 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MainActivity.this, PublishActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", user);
+            intent.putExtras(bundle);
             startActivity(intent);
         }
     }

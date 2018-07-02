@@ -27,6 +27,7 @@ import java.lang.ref.WeakReference;
 
 import e.orz.cof.R;
 import e.orz.cof.model.User;
+import e.orz.cof.util.ImageUtil;
 import e.orz.cof.util.NetUtil;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -63,7 +64,6 @@ public class LoginActivity extends Activity {
         btRegister.setOnClickListener(new BtRegisterListener());
         ivFace.setOnClickListener(new IvFaceListener());
         handler = new NoLeakHandler(this);
-
 
     }
 
@@ -186,14 +186,7 @@ public class LoginActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     try {
                         Uri selectedImage = data.getData(); //获取系统返回的照片的Uri
-
-                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                        Cursor cursor = getContentResolver().query(selectedImage,
-                                filePathColumn, null, null, null);//从系统表中查询指定Uri对应的照片
-                        cursor.moveToFirst();
-                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                        String path = cursor.getString(columnIndex);  //获取照片路径
-                        cursor.close();
+                        String path = ImageUtil.uriToPath(this, selectedImage);
                         uploadImage(path);
                         System.out.println(path);
 
