@@ -33,7 +33,6 @@ public class PubImageAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        System.out.println(imageUriList.size());
         return imageUriList.size();
     }
 

@@ -15,13 +15,17 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import e.orz.cof.R;
+import e.orz.cof.activity.MainActivity;
 import e.orz.cof.model.Blog;
+import e.orz.cof.model.User;
 import e.orz.cof.util.NetUtil;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -37,10 +41,14 @@ public class BlogAdapter extends BaseAdapter {
 
     private Context context;
     private List<Blog> blogList;
+    private User user;
+    private MainActivity mainActivity;
 
-    public BlogAdapter(Context context, List<Blog> blogList) {
+    public BlogAdapter(Context context, List<Blog> blogList, User user, MainActivity mainActivity) {
         this.context = context;
         this.blogList = blogList;
+        this.user = user;
+        this.mainActivity = mainActivity;
     }
 
     @Override
@@ -72,82 +80,119 @@ public class BlogAdapter extends BaseAdapter {
         final LinearLayout llComment = view.findViewById(R.id.ll_comment);
         ImageView ivComment = view.findViewById(R.id.iv_comment);
         Button btComment = view.findViewById(R.id.bt_comment);
-        if(blogList.get(i).getFaceUrl().isEmpty()){
+        Button btDel = view.findViewById(R.id.bt_del_blog);
+
+        final Activity activity = (Activity) view.getContext();
+        final Blog blog = blogList.get(i);
+
+        if (blog.getFaceUrl().isEmpty()) {
             ivFace.setImageResource(R.drawable.pic);
-        }else{
+        } else {
             Glide.with(view.getContext())
-                    .load(NetUtil.BASE_URL + blogList.get(i).getFaceUrl())
+                    .load(NetUtil.BASE_URL + blog.getFaceUrl())
                     .into(ivFace);
         }
-        time.setText(blogList.get(i).getTime());
-        name.setText(blogList.get(i).getUserName());
-        textContent.setText(blogList.get(i).getText());
+        if (blog.getLike()) {
+            ivLike.setImageResource(R.drawable.liked);
+        } else {
+            ivLike.setImageResource(R.drawable.like);
+        }
+        time.setText(blog.getTime());
+        name.setText(blog.getUserName());
+        textContent.setText(blog.getText());
 
-        final Activity activity = (Activity)view.getContext();
+
+        if (!blog.getMine()) {
+            btDel.setVisibility(View.INVISIBLE);
+        } else {
+            btDel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            OkHttpClient mClient = NetUtil.getClient();
+                            Request.Builder builder = new Request.Builder();
+                            RequestBody requestBody = new FormBody.Builder()
+                                    .add("blogId", blog.getBlogId() + "")
+                                    .add("userName", user.getUserName())
+                                    .build();
+                            Request request = builder.url(NetUtil.BASE_URL + "/delBlog.do")
+                                    .post(requestBody).build();
+
+                            try {
+                                final Response response = mClient.newCall(request).execute();
+                                final String msg = response.body().string();
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
+                                        mainActivity.loadData();
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
+
+                }
+            });
+        }
+
+
         ivLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tvUpNum.setVisibility(View.VISIBLE);
-                llComment.clearFocus();
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tvUpNum.setVisibility(View.GONE);
-                            }
-                        });
-                    }
-                };
-                new Timer().schedule(task,1000);
-            }
-        });
-
-        ivComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                llComment.setVisibility(View.VISIBLE);
-                llComment.requestFocus();
-                etComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        if(!etComment.isFocused()) {
-                            etComment.setText("");
-                            llComment.setVisibility(View.GONE);
-                        }
-                    }
-                });
-            }
-        });
-
-        final Blog blog = blogList.get(i);
-        btComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String text = etComment.getText().toString();
-                new Thread(){
+                new Thread() {
                     @Override
                     public void run() {
                         OkHttpClient mClient = NetUtil.getClient();
                         Request.Builder builder = new Request.Builder();
                         RequestBody requestBody = new FormBody.Builder()
-                                .add("blogId", blog.getBlogId()+"")
-                                .add("userName", blog.getUserName())
-                                .add("text", text)
+                                .add("blogId", blog.getBlogId() + "")
+                                .add("userName", user.getUserName())
                                 .build();
-                        Request request = builder.url(NetUtil.BASE_URL + "/addComment.do")
+                        Request request = builder.url(NetUtil.BASE_URL + "/updateLike.do")
                                 .post(requestBody).build();
-
                         try {
                             final Response response = mClient.newCall(request).execute();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
-                                        Toast.makeText(activity, response.body().string(), Toast.LENGTH_SHORT).show();
-                                        llComment.setVisibility(View.GONE);
-                                    } catch (IOException e) {
+                                        JSONObject jo = new JSONObject(response.body().string());
+                                        String type = "";
+                                        int upNum = 0;
+                                        if ("ok".equals(jo.getString("status"))) {
+                                            type = jo.getString("type");
+                                            upNum = jo.getInt("upNum");
+                                            blog.setUpNum(upNum);
+                                        } else {
+                                            Toast.makeText(activity, "点赞异常", Toast.LENGTH_SHORT).show();
+                                        }
+                                        tvUpNum.setText("已有" + upNum + "人点赞");
+
+                                        if ("点赞".equals(type)) {
+                                            ivLike.setImageResource(R.drawable.liked);
+                                        } else {
+                                            ivLike.setImageResource(R.drawable.like);
+                                        }
+                                        tvUpNum.setVisibility(View.VISIBLE);
+                                        llComment.clearFocus();
+                                        TimerTask task = new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                activity.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        tvUpNum.setVisibility(View.GONE);
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        new Timer().schedule(task, 1000);
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -161,6 +206,69 @@ public class BlogAdapter extends BaseAdapter {
             }
         });
 
+        final View vSplit = view.findViewById(R.id.v_split);
+        ivComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(llComment.getVisibility()==View.GONE){
+                    llComment.setVisibility(View.VISIBLE);
+                    llComment.requestFocus();
+                    vSplit.setVisibility(View.VISIBLE);
+                }else{
+                    llComment.setVisibility(View.GONE);
+                    vSplit.setVisibility(View.GONE);
+                }
+
+                etComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if (!etComment.isFocused()) {
+                            etComment.setText("");
+                            llComment.setVisibility(View.GONE);
+                            vSplit.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        });
+
+
+        btComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String text = etComment.getText().toString();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        OkHttpClient mClient = NetUtil.getClient();
+                        Request.Builder builder = new Request.Builder();
+                        RequestBody requestBody = new FormBody.Builder()
+                                .add("blogId", blog.getBlogId() + "")
+                                .add("userName", blog.getUserName())
+                                .add("text", text)
+                                .build();
+                        Request request = builder.url(NetUtil.BASE_URL + "/addComment.do")
+                                .post(requestBody).build();
+
+                        try {
+                            final Response response = mClient.newCall(request).execute();
+                            final String msg = response.body().string();
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
+                                    llComment.setVisibility(View.GONE);
+
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
+
+            }
+        });
 
 
         List<String> pictureList = blogList.get(i).getPictures();

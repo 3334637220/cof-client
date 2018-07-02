@@ -152,9 +152,9 @@ public class LoginActivity extends Activity {
                 case LOGIN_CODE:
                     try {
                         JSONObject jo = new JSONObject(msg.obj.toString());
-                        if(!"ok".equals(jo.getString("status"))){
+                        if (!"ok".equals(jo.getString("status"))) {
                             mActivity.get().makeToast("用户名或密码错误");
-                        }else{
+                        } else {
                             User user = new User();
                             user.setUserName(jo.getString("userName"));
                             user.setPassword(jo.getString("password"));
@@ -198,8 +198,6 @@ public class LoginActivity extends Activity {
 
         }
     }
-
-
 
 
     private void makeToast(String msg) {

@@ -9,9 +9,26 @@ public class Blog {
 	private String faceUrl;
 	private int upNum;
 	private String time;
-
+	private Boolean isLike;
+	private Boolean isMine;
 	private ArrayList<Comment> comments;
 	private ArrayList<String> pictures;
+
+	public Boolean getMine() {
+		return isMine;
+	}
+
+	public void setMine(Boolean mine) {
+		isMine = mine;
+	}
+
+	public Boolean getLike() {
+		return isLike;
+	}
+
+	public void setLike(Boolean like) {
+		isLike = like;
+	}
 
 	public String getTime() {
 		return time;
