@@ -16,7 +16,14 @@ import okhttp3.Response;
  */
 
 public class NetUtil {
-    public static final String BASE_URL = "http://192.168.136.1:8080/cof-server";
+
+    public static final String BASE_URL = "http://157.0.84.241:8080/cof-server";
+    //public static final String BASE_URL = "http://192.168.136.1:8080/cof-server";
+
+
+    public static final MediaType FORM_CONTENT_TYPE
+            = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+
     private static OkHttpClient mClient = new OkHttpClient();
 
 

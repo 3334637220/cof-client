@@ -49,8 +49,84 @@
         android:layout_marginBottom="20dp"
         android:numColumns="5">
     </GridView>
-    <TextView
-        android:id="@+id/tv_time"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_marginRight="10dp"
+        android:layout_height="30dp">
+        <TextView
+            android:layout_marginLeft="60dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/tv_time"
+            android:layout_width="70dp"
+            android:layout_height="30dp" />
+        <Button
+            android:id="@+id/bt_del_blog"
+            android:textSize="15sp"
+            android:text="删除"
+            android:background="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" />
+
+        <TextView
+            android:id="@+id/tv_up_num"
+            android:layout_marginLeft="30dp"
+            android:visibility="gone"
+            android:text="已有3人点赞"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="30dp">
+            <ImageView
+                android:id="@+id/iv_like"
+                android:focusable="true"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/like"
+                android:layout_width="30dp"
+                android:layout_height="15dp" />
+            <ImageView
+                android:id="@+id/iv_comment"
+                android:src="@drawable/comment"
+                android:layout_gravity="center_vertical"
+                android:layout_width="30dp"
+                android:layout_height="15dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_comment"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="35dp">
+        <EditText
+            android:id="@+id/et_comment"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="10dp"
+            android:hint="评论"
+
+            android:textSize="15sp"
+            android:textColorHint="@color/colorGray"
+            android:layout_width="405dp"
+            android:layout_height="35dp" />
+        <Button
+            android:id="@+id/bt_comment"
+            android:gravity="center_vertical"
+            android:text="发送"
+            android:textColor="@color/colorGreen"
+            android:textSize="15sp"
+            android:background="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp" />
+    </LinearLayout>
+
+
+
+
 </LinearLayout>

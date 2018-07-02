@@ -112,12 +112,13 @@ public class PublishActivity extends Activity {
                 public void run() {
                     OkHttpClient mClient = NetUtil.getClient();
                     Request.Builder builder = new Request.Builder();
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("userName", user.getUserName())
-                            .add("text", etText.getText().toString())
-                            .build();
+                    RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
+                            "userName="+user.getUserName()+
+                                    "&"+"text="+etText.getText());
+
                     Request request = builder.url(NetUtil.BASE_URL + "/addBlog.do")
                             .post(requestBody).build();
+
                     try {
                         Response response = mClient.newCall(request).execute();
                         Message msg = new Message();
