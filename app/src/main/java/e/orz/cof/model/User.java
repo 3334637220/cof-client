@@ -1,6 +1,8 @@
 package e.orz.cof.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable{
 	private String userName;
 	private String password;
 	private String faceUrl;

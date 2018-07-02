@@ -1,9 +1,12 @@
-package e.orz.cof;
+package e.orz.cof.activity;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class PublishActivity extends AppCompatActivity {
+import e.orz.cof.R;
+
+public class PublishActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

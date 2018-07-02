@@ -46,7 +46,7 @@ public class LoginActivity extends Activity {
     private Button btLogin;
     private Button btRegister;
     private ImageView ivFace;
-    private Handler handler;
+    private NoLeakHandler handler;
     private String faceUrl;
 
     @Override
@@ -159,6 +159,11 @@ public class LoginActivity extends Activity {
                             user.setUserName(jo.getString("userName"));
                             user.setPassword(jo.getString("password"));
                             user.setFaceUrl(jo.getString("faceUrl"));
+                            Intent intent = new Intent(mActivity.get(), MainActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("user", user);
+                            intent.putExtras(bundle);
+                            mActivity.get().startActivity(intent);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -210,13 +215,13 @@ public class LoginActivity extends Activity {
 
 
     private void uploadImage(String imagePath) {
-        new UploadTask().execute(imagePath);
+        new NetWorkTask().execute(imagePath);
     }
 
     /**
      * 访问网络AsyncTask,访问网络在子线程进行并返回主线程通知访问的结果
      */
-    class UploadTask extends AsyncTask<String, Integer, String> {
+    class NetWorkTask extends AsyncTask<String, Integer, String> {
 
         @Override
         protected void onPreExecute() {
@@ -225,7 +230,7 @@ public class LoginActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            return uploadPicture(params[0]);
+            return doPost(params[0]);
         }
 
         @Override
@@ -240,9 +245,8 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public String uploadPicture(String imagePath) {
+    public String doPost(String imagePath) {
         OkHttpClient mOkHttpClient = new OkHttpClient();
-
         String result = "error";
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.addFormDataPart("image", imagePath,

@@ -12,8 +12,8 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
-        <e.orz.cof.NetImageView
-            android:id="@+id/iv_portrait"
+        <ImageView
+            android:id="@+id/iv_face"
             android:layout_width="50dp"
             android:layout_height="50dp" />
 

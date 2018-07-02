@@ -6,26 +6,29 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import e.orz.cof.R;
+import e.orz.cof.util.NetUtil;
 
 /**
  * Created by ORZ on 2018/6/14.
  */
 
-public class ImageAdapter extends BaseAdapter{
+public class ImageAdapter extends BaseAdapter {
     private Context context;
-    private List<String> bitmapList;
+    private List<String> pictureList;
 
-    public ImageAdapter(Context context, List<String> bitmapList){
+    public ImageAdapter(Context context, List<String> pictureList) {
         this.context = context;
-        this.bitmapList = bitmapList;
+        this.pictureList = pictureList;
     }
 
     @Override
     public int getCount() {
-        return bitmapList.size();
+        return pictureList.size();
     }
 
     @Override
@@ -42,7 +45,9 @@ public class ImageAdapter extends BaseAdapter{
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = View.inflate(context, R.layout.image_content_item, null);
         ImageView imageView = view.findViewById(R.id.image);
-//        imageView.setImageURL(bitmapList.get(i));
+        Glide.with(view.getContext())
+                .load(NetUtil.BASE_URL + pictureList.get(i))
+                .into(imageView);
         return view;
     }
 }

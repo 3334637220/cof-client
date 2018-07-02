@@ -1,9 +1,57 @@
 package e.orz.cof.model;
 
+import java.util.ArrayList;
+
 public class Blog {
 	private int blogId;
 	private String userName;
 	private String text;
+	private String faceUrl;
+	private int upNum;
+	private String time;
+
+	private ArrayList<Comment> comments;
+	private ArrayList<String> pictures;
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public int getUpNum() {
+		return upNum;
+	}
+
+	public void setUpNum(int upNum) {
+		this.upNum = upNum;
+	}
+
+	public String getFaceUrl() {
+		return faceUrl;
+	}
+
+	public void setFaceUrl(String faceUrl) {
+		this.faceUrl = faceUrl;
+	}
+
+	public ArrayList<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(ArrayList<Comment> comments) {
+		this.comments = comments;
+	}
+
+	public ArrayList<String> getPictures() {
+		return pictures;
+	}
+
+	public void setPictures(ArrayList<String> pictures) {
+		this.pictures = pictures;
+	}
 
 	public Blog() {
 	}

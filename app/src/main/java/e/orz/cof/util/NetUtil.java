@@ -16,7 +16,7 @@ import okhttp3.Response;
  */
 
 public class NetUtil {
-    public static final String BASE_URL = "http://157.0.84.241:8080/cof-server";
+    public static final String BASE_URL = "http://192.168.136.1:8080/cof-server";
     private static OkHttpClient mClient = new OkHttpClient();
 
 

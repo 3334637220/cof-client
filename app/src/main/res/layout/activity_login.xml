@@ -12,7 +12,7 @@
             android:id="@+id/iv_face"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/touxiang"
+            android:src="@drawable/pic"
             android:layout_marginBottom="60dp"
             android:scaleType="centerCrop"
             android:layout_width="70dp"
