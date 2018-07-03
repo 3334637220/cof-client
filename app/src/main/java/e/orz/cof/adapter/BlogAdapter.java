@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import java.util.TimerTask;
 import e.orz.cof.R;
 import e.orz.cof.activity.MainActivity;
 import e.orz.cof.model.Blog;
+import e.orz.cof.model.Comment;
 import e.orz.cof.model.User;
 import e.orz.cof.util.NetUtil;
 import okhttp3.FormBody;
@@ -84,6 +86,8 @@ public class BlogAdapter extends BaseAdapter {
 
         final Activity activity = (Activity) view.getContext();
         final Blog blog = blogList.get(i);
+        final View vSplit = view.findViewById(R.id.v_split);
+
 
         if (blog.getFaceUrl().isEmpty()) {
             ivFace.setImageResource(R.drawable.pic);
@@ -179,7 +183,6 @@ public class BlogAdapter extends BaseAdapter {
                                             ivLike.setImageResource(R.drawable.like);
                                         }
                                         tvUpNum.setVisibility(View.VISIBLE);
-                                        llComment.clearFocus();
                                         TimerTask task = new TimerTask() {
                                             @Override
                                             public void run() {
@@ -206,59 +209,62 @@ public class BlogAdapter extends BaseAdapter {
             }
         });
 
-        final View vSplit = view.findViewById(R.id.v_split);
+
         ivComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(llComment.getVisibility()==View.GONE){
+                if(llComment.getVisibility()!=View.VISIBLE){
                     llComment.setVisibility(View.VISIBLE);
-                    llComment.requestFocus();
                     vSplit.setVisibility(View.VISIBLE);
                 }else{
                     llComment.setVisibility(View.GONE);
                     vSplit.setVisibility(View.GONE);
                 }
 
-                etComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        if (!etComment.isFocused()) {
-                            etComment.setText("");
-                            llComment.setVisibility(View.GONE);
-                            vSplit.setVisibility(View.GONE);
-                        }
-                    }
-                });
             }
         });
+
+        List<String> pictureList = blog.getPictures();
+        ImageAdapter imageAdapter = new ImageAdapter(context, pictureList);
+        gridView.setAdapter(imageAdapter);
+
+
+        final List<Comment> commentList = blog.getComments();
+        final CommentAdapter commentAdapter = new CommentAdapter(context, commentList);
+        ListView lvComment = view.findViewById(R.id.lv_comment);
+        lvComment.setAdapter(commentAdapter);
 
 
         btComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 final String text = etComment.getText().toString();
                 new Thread() {
                     @Override
                     public void run() {
                         OkHttpClient mClient = NetUtil.getClient();
                         Request.Builder builder = new Request.Builder();
-                        RequestBody requestBody = new FormBody.Builder()
-                                .add("blogId", blog.getBlogId() + "")
-                                .add("userName", blog.getUserName())
-                                .add("text", text)
-                                .build();
+                        RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
+                                "blogId="+blog.getBlogId()
+                                        +"&userName="+user.getUserName()
+                                        +"&text="+text);
                         Request request = builder.url(NetUtil.BASE_URL + "/addComment.do")
                                 .post(requestBody).build();
 
                         try {
                             final Response response = mClient.newCall(request).execute();
                             final String msg = response.body().string();
+                            commentList.add(new Comment(blog.getBlogId(),user.getUserName(),text));
+
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
                                     llComment.setVisibility(View.GONE);
-
+                                    vSplit.setVisibility(View.GONE);
+                                    etComment.setText("");
+                                    commentAdapter.notifyDataSetChanged();
                                 }
                             });
                         } catch (Exception e) {
@@ -269,11 +275,6 @@ public class BlogAdapter extends BaseAdapter {
 
             }
         });
-
-
-        List<String> pictureList = blogList.get(i).getPictures();
-        ImageAdapter imageAdapter = new ImageAdapter(context, pictureList);
-        gridView.setAdapter(imageAdapter);
         return view;
     }
 }

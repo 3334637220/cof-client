@@ -17,8 +17,10 @@ import okhttp3.Response;
 
 public class NetUtil {
 
-    public static final String BASE_URL = "http://157.0.84.241:8080/cof-server";
-    //public static final String BASE_URL = "http://192.168.136.1:8080/cof-server";
+    //宿舍
+    //public static final String BASE_URL = "http://157.0.84.241:8080/cof-server";
+    //教室
+    public static final String BASE_URL = "http://192.168.136.1:8080/cof-server";
 
 
     public static final MediaType FORM_CONTENT_TYPE
@@ -27,7 +29,7 @@ public class NetUtil {
     private static OkHttpClient mClient = new OkHttpClient();
 
 
-    public static OkHttpClient getClient(){
+    public static OkHttpClient getClient() {
         return mClient;
     }
 

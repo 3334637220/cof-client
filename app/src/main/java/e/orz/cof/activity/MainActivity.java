@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
                             blog.setUserName(jo.getString("userName"));
                             blog.setText(jo.getString("text"));
                             blog.setUpNum(jo.getInt("upNum"));
-                            if (jo.getString("time").isEmpty()) {
+                            if (jo.getString("time").isEmpty()||jo.getString("time").equals("1秒前")) {
                                 blog.setTime("刚刚");
                             } else {
                                 blog.setTime(jo.getString("time"));

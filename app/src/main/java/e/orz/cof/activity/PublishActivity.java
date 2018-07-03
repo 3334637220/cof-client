@@ -170,9 +170,10 @@ public class PublishActivity extends Activity {
                                 mActivity.get().uploadImage(path, blogId);
                             }
                             mActivity.get().makeToast("发表成功");
+                            Thread.sleep(500);
                             mActivity.get().finish();
                         }
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     System.out.println(msg.obj.toString());
