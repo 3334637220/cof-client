@@ -43,6 +43,18 @@
             android:gravity="right"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <ImageView
+                android:src="@drawable/location"
+                android:layout_width="20dp"
+                android:layout_height="40dp" />
+            <Spinner
+                android:id="@+id/sp_location"
+                android:background="@color/colorWhite"
+
+                android:layout_width="300dp"
+                android:layout_marginRight="100dp"
+                android:layout_height="wrap_content">
+            </Spinner>
             <Button
                 android:id="@+id/bt_select"
                 android:text="选择图片"

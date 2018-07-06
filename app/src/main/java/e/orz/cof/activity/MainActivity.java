@@ -127,6 +127,10 @@ public class MainActivity extends Activity {
                             blog.setFaceUrl(jo.getString("faceUrl"));
                             blog.setLike(jo.getBoolean("isLike"));
                             blog.setMine(jo.getBoolean("isMine"));
+                            if(jo.has("location")) {
+                                if(!jo.getString("location").equals("选择位置"))
+                                    blog.setLocation(jo.getString("location"));
+                            }
                             JSONArray pictureJa = jo.getJSONArray("pictures");
                             ArrayList<String> pictures = new ArrayList<>();
                             for (int j = 0; j < pictureJa.length(); j++) {

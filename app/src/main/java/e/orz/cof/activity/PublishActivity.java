@@ -8,13 +8,21 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.Poi;
 import com.bumptech.glide.Glide;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -36,6 +44,8 @@ import e.orz.cof.model.Blog;
 import e.orz.cof.model.Comment;
 import e.orz.cof.model.User;
 import e.orz.cof.util.ImageUtil;
+import e.orz.cof.util.LocationApplication;
+import e.orz.cof.util.LocationService;
 import e.orz.cof.util.NetUtil;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -58,6 +68,10 @@ public class PublishActivity extends Activity {
     private List<Uri> mSelected;
     private User user;
     private Handler handler;
+    private LocationService locationService;
+    private Spinner spLocation;
+    private ArrayList<String> poiList;
+    ArrayAdapter<String> locationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +88,14 @@ public class PublishActivity extends Activity {
         etText = findViewById(R.id.et_text);
         btCancel.setOnClickListener(new BtCancelListener());
         btPublish.setOnClickListener(new BtPublishListener());
-        user = (User)getIntent().getSerializableExtra("user");
+        user = (User) getIntent().getSerializableExtra("user");
         handler = new NoLeakHandler(this);
+
+        spLocation = findViewById(R.id.sp_location);
+        poiList = new ArrayList<>();
+        poiList.add("选择位置");
+        locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, poiList);
+        spLocation.setAdapter(locationAdapter);
 
     }
 
@@ -95,7 +115,7 @@ public class PublishActivity extends Activity {
         }
     }
 
-    class BtCancelListener implements View.OnClickListener{
+    class BtCancelListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
@@ -103,7 +123,7 @@ public class PublishActivity extends Activity {
         }
     }
 
-    class BtPublishListener implements View.OnClickListener{
+    class BtPublishListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
@@ -113,9 +133,9 @@ public class PublishActivity extends Activity {
                     OkHttpClient mClient = NetUtil.getClient();
                     Request.Builder builder = new Request.Builder();
                     RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
-                            "userName="+user.getUserName()+
-                                    "&"+"text="+etText.getText());
-
+                            "userName=" + user.getUserName() +
+                                    "&text=" + etText.getText() +
+                                    "&location="+spLocation.getSelectedItem());
                     Request request = builder.url(NetUtil.BASE_URL + "/addBlog.do")
                             .post(requestBody).build();
 
@@ -147,6 +167,59 @@ public class PublishActivity extends Activity {
     }
 
 
+    /*****
+     *
+     * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
+     *
+     */
+    private BDAbstractLocationListener mListener = new BDAbstractLocationListener() {
+
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            locationService.stop();
+            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
+                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
+                    for (int i = 0; i < location.getPoiList().size(); i++) {
+                        Poi poi = location.getPoiList().get(i);
+                        poiList.add(poi.getName());
+                    }
+                }
+            }
+            locationAdapter.notifyDataSetChanged();
+
+        }
+
+    };
+
+    /***
+     * Stop location service
+     */
+    @Override
+    protected void onStop() {
+        // TODO Auto-generated method stub
+        locationService.unregisterListener(mListener); //注销掉监听
+        locationService.stop(); //停止定位服务
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        super.onStart();
+        // -----------location config ------------
+        locationService = ((LocationApplication) getApplication()).locationService;
+        //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
+        locationService.registerListener(mListener);
+        //注册监听
+        int type = getIntent().getIntExtra("from", 0);
+        if (type == 0) {
+            locationService.setLocationOption(locationService.getDefaultLocationClientOption());
+        } else if (type == 1) {
+            locationService.setLocationOption(locationService.getOption());
+        }
+        locationService.start();
+    }
+
     private static class NoLeakHandler extends Handler {
         private WeakReference<PublishActivity> mActivity;
 
@@ -160,13 +233,13 @@ public class PublishActivity extends Activity {
                 case PUBLISH_CODE:
                     try {
                         JSONObject jo = new JSONObject(msg.obj.toString());
-                        if(!"ok".equals(jo.getString("status"))){
+                        if (!"ok".equals(jo.getString("status"))) {
                             mActivity.get().makeToast("发表失败");
-                        }else{
+                        } else {
                             int blogId = jo.getInt("blogId");
                             List<Uri> mSelected = mActivity.get().mSelected;
-                            for(int i=0;i<mActivity.get().mSelected.size();i++){
-                                String path = ImageUtil.uriToPath(mActivity.get(),mSelected.get(i));
+                            for (int i = 0; i < mActivity.get().mSelected.size(); i++) {
+                                String path = ImageUtil.uriToPath(mActivity.get(), mSelected.get(i));
                                 mActivity.get().uploadImage(path, blogId);
                             }
                             mActivity.get().makeToast("发表成功");
@@ -196,7 +269,7 @@ public class PublishActivity extends Activity {
     class NetWorkTask extends AsyncTask<String, Integer, String> {
         int blogId;
 
-        public NetWorkTask(int blogId){
+        public NetWorkTask(int blogId) {
             this.blogId = blogId;
         }
 
@@ -214,20 +287,20 @@ public class PublishActivity extends Activity {
         protected void onPostExecute(final String result) {
             if (!"error".equals(result)) {
                 Log.i("LoginActivity", "图片地址 " + NetUtil.BASE_URL + result);
-                new Thread(){
+                new Thread() {
                     @Override
                     public void run() {
                         OkHttpClient mClient = NetUtil.getClient();
                         Request.Builder builder = new Request.Builder();
                         RequestBody requestBody = new FormBody.Builder()
-                                .add("blogId",blogId+"")
+                                .add("blogId", blogId + "")
                                 .add("imageUrl", result)
                                 .build();
                         Request request = builder.url(NetUtil.BASE_URL + "/addPicture.do")
                                 .post(requestBody).build();
                         try {
                             Response response = mClient.newCall(request).execute();
-                            System.out.println(response.body().string()+result);
+                            System.out.println(response.body().string() + result);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -267,4 +340,6 @@ public class PublishActivity extends Activity {
         }
         return result;
     }
+
+
 }

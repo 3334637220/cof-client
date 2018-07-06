@@ -76,10 +76,9 @@ public class LoginActivity extends Activity {
                 public void run() {
                     OkHttpClient mClient = NetUtil.getClient();
                     Request.Builder builder = new Request.Builder();
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("userName", etUserName.getText().toString())
-                            .add("password", etPassword.getText().toString())
-                            .build();
+                    RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
+                            "userName=" + etUserName.getText() +
+                                    "&password=" + etPassword.getText());
                     Request request = builder.url(NetUtil.BASE_URL + "/login.do")
                             .post(requestBody).build();
                     try {
@@ -102,16 +101,19 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onClick(View view) {
+            if(faceUrl.isEmpty()){
+                makeToast("请选择注册头像");
+                return;
+            }
             new Thread() {
                 @Override
                 public void run() {
                     OkHttpClient mClient = NetUtil.getClient();
                     Request.Builder builder = new Request.Builder();
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("userName", etUserName.getText().toString())
-                            .add("password", etPassword.getText().toString())
-                            .add("faceUrl", faceUrl)
-                            .build();
+                    RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
+                            "userName=" + etUserName.getText() +
+                                    "&password=" + etPassword.getText() +
+                                    "&faceUrl="+faceUrl);
                     Request request = builder.url(NetUtil.BASE_URL + "/register.do")
                             .post(requestBody).build();
                     try {

@@ -102,6 +102,10 @@ public class BlogAdapter extends BaseAdapter {
         final ImageView ivBg = view.findViewById(R.id.iv_bg);
         final Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate);
         final ImageView ivLoding = view.findViewById(R.id.iv_loading);
+
+        TextView tvLocation = view.findViewById(R.id.tv_location);
+        tvLocation.setText(blog.getLocation());
+
         if (i == 0) {
             ivBg.setVisibility(View.VISIBLE);
             Glide.with(view.getContext())
