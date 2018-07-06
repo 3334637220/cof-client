@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <rotate
+        android:duration="1000"
+        android:fromDegrees="0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+
+        android:interpolator="@android:anim/linear_interpolator"
+        android:toDegrees="360" />
+
+    <!--
+    duration:动画时长，毫秒单位
+    fromDegrees:动画起始时的角度
+    toDegrees:动画结束时的角度
+    pivotX:动画播放的相对位置（x轴）
+    pivotY:动画播放的相对位置（y轴）
+
+    备注：相对位置取值范围0%-100%，角度的取值(没有！！！，并且可正可负)
+    -->
+</set>

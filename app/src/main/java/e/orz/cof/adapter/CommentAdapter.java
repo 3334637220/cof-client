@@ -28,7 +28,6 @@ public class CommentAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.i("CommentAdapter",commentList.size()+"");
         return commentList.size();
     }
 

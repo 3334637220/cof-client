@@ -7,7 +7,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -44,6 +48,7 @@ public class MainActivity extends Activity {
     private NoLeakHandler handler;
     private BlogAdapter blogAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +63,6 @@ public class MainActivity extends Activity {
         user = (User) getIntent().getSerializableExtra("user");
         blogAdapter = new BlogAdapter(this, blogList, user, this);
         listView.setAdapter(blogAdapter);
-
 
     }
 
@@ -115,7 +119,7 @@ public class MainActivity extends Activity {
                             blog.setUserName(jo.getString("userName"));
                             blog.setText(jo.getString("text"));
                             blog.setUpNum(jo.getInt("upNum"));
-                            if (jo.getString("time").isEmpty()||jo.getString("time").equals("1秒前")) {
+                            if (jo.getString("time").isEmpty() || jo.getString("time").equals("1秒前")) {
                                 blog.setTime("刚刚");
                             } else {
                                 blog.setTime(jo.getString("time"));
@@ -172,7 +176,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void makeToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
+
+
 }
