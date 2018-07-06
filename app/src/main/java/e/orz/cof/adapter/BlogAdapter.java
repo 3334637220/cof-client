@@ -274,6 +274,11 @@ public class BlogAdapter extends BaseAdapter {
                 view.getContext().startActivity(intent);
             }
         });
+        if(pictureList.size()>5){
+            ViewGroup.LayoutParams params1 = gridView.getLayoutParams();
+            params1.height += 340;
+        }
+
 
 
         final List<Comment> commentList = blog.getComments();
