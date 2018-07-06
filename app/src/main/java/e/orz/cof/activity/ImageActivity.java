@@ -2,7 +2,6 @@ package e.orz.cof.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +11,9 @@ import com.bumptech.glide.Glide;
 import e.orz.cof.R;
 import e.orz.cof.util.NetUtil;
 
+/**
+ * 用此Activity查看大图
+ */
 public class ImageActivity extends Activity {
 
     private ImageView image;
@@ -24,7 +26,7 @@ public class ImageActivity extends Activity {
         Intent intent = getIntent();
         String url = intent.getStringExtra("url");
         Glide.with(this)
-                .load(NetUtil.BASE_URL+url)
+                .load(NetUtil.BASE_URL + url)
                 .into(image);
 
         image.setOnClickListener(new View.OnClickListener() {

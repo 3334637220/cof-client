@@ -2,7 +2,6 @@ package e.orz.cof.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import e.orz.cof.R;
 import e.orz.cof.model.User;
 import e.orz.cof.util.ImageUtil;
 import e.orz.cof.util.NetUtil;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -37,6 +35,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * 登录与注册界面
+ */
 public class LoginActivity extends Activity {
 
     private static final int LOGIN_CODE = 0x1;
@@ -101,7 +102,7 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onClick(View view) {
-            if(faceUrl.isEmpty()){
+            if (faceUrl.isEmpty()) {
                 makeToast("请选择注册头像");
                 return;
             }
@@ -113,7 +114,7 @@ public class LoginActivity extends Activity {
                     RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
                             "userName=" + etUserName.getText() +
                                     "&password=" + etPassword.getText() +
-                                    "&faceUrl="+faceUrl);
+                                    "&faceUrl=" + faceUrl);
                     Request request = builder.url(NetUtil.BASE_URL + "/register.do")
                             .post(requestBody).build();
                     try {
@@ -131,6 +132,8 @@ public class LoginActivity extends Activity {
         }
     }
 
+
+    // 选择头像
     class IvFaceListener implements View.OnClickListener {
 
         @Override
@@ -141,6 +144,7 @@ public class LoginActivity extends Activity {
     }
 
 
+    // 登录与注册检查
     private static class NoLeakHandler extends Handler {
         private WeakReference<LoginActivity> mActivity;
 
@@ -179,6 +183,7 @@ public class LoginActivity extends Activity {
         }
     }
 
+    // 获取所选择的头像并上传
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 

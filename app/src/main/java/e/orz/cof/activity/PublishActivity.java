@@ -8,11 +8,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,13 +20,10 @@ import android.widget.Toast;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.Poi;
-import com.bumptech.glide.Glide;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -40,8 +34,6 @@ import java.util.List;
 
 import e.orz.cof.R;
 import e.orz.cof.adapter.PubImageAdapter;
-import e.orz.cof.model.Blog;
-import e.orz.cof.model.Comment;
 import e.orz.cof.model.User;
 import e.orz.cof.util.ImageUtil;
 import e.orz.cof.util.LocationApplication;
@@ -55,6 +47,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * 发布朋友圈的界面
+ */
 public class PublishActivity extends Activity {
 
     private Button btSelect;
@@ -71,7 +66,7 @@ public class PublishActivity extends Activity {
     private LocationService locationService;
     private Spinner spLocation;
     private ArrayList<String> poiList;
-    ArrayAdapter<String> locationAdapter;
+    private ArrayAdapter<String> locationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +94,7 @@ public class PublishActivity extends Activity {
 
     }
 
+    // 调用知乎选图框架选择图片
     class BtSelectListener implements View.OnClickListener {
 
         @Override
@@ -115,6 +111,7 @@ public class PublishActivity extends Activity {
         }
     }
 
+    // 取消发布
     class BtCancelListener implements View.OnClickListener {
 
         @Override
@@ -123,6 +120,7 @@ public class PublishActivity extends Activity {
         }
     }
 
+    // 发布
     class BtPublishListener implements View.OnClickListener {
 
         @Override
@@ -135,7 +133,7 @@ public class PublishActivity extends Activity {
                     RequestBody requestBody = RequestBody.create(NetUtil.FORM_CONTENT_TYPE,
                             "userName=" + user.getUserName() +
                                     "&text=" + etText.getText() +
-                                    "&location="+spLocation.getSelectedItem());
+                                    "&location=" + spLocation.getSelectedItem());
                     Request request = builder.url(NetUtil.BASE_URL + "/addBlog.do")
                             .post(requestBody).build();
 
@@ -155,6 +153,7 @@ public class PublishActivity extends Activity {
         }
     }
 
+    // 选图后回调
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -191,35 +190,8 @@ public class PublishActivity extends Activity {
 
     };
 
-    /***
-     * Stop location service
-     */
-    @Override
-    protected void onStop() {
-        // TODO Auto-generated method stub
-        locationService.unregisterListener(mListener); //注销掉监听
-        locationService.stop(); //停止定位服务
-        super.onStop();
-    }
 
-    @Override
-    protected void onStart() {
-        // TODO Auto-generated method stub
-        super.onStart();
-        // -----------location config ------------
-        locationService = ((LocationApplication) getApplication()).locationService;
-        //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
-        locationService.registerListener(mListener);
-        //注册监听
-        int type = getIntent().getIntExtra("from", 0);
-        if (type == 0) {
-            locationService.setLocationOption(locationService.getDefaultLocationClientOption());
-        } else if (type == 1) {
-            locationService.setLocationOption(locationService.getOption());
-        }
-        locationService.start();
-    }
-
+    // 发布回调上传图片
     private static class NoLeakHandler extends Handler {
         private WeakReference<PublishActivity> mActivity;
 
@@ -257,6 +229,34 @@ public class PublishActivity extends Activity {
 
     private void makeToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+
+    /***
+     * Stop location service
+     */
+    @Override
+    protected void onStop() {
+        locationService.unregisterListener(mListener); //注销掉监听
+        locationService.stop(); //停止定位服务
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // -----------location config ------------
+        locationService = ((LocationApplication) getApplication()).locationService;
+        //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
+        locationService.registerListener(mListener);
+        //注册监听
+        int type = getIntent().getIntExtra("from", 0);
+        if (type == 0) {
+            locationService.setLocationOption(locationService.getDefaultLocationClientOption());
+        } else if (type == 1) {
+            locationService.setLocationOption(locationService.getOption());
+        }
+        locationService.start();
     }
 
     private void uploadImage(String imagePath, int blogId) {

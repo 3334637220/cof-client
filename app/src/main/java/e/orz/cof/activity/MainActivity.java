@@ -5,17 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +31,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * 展示所有的blog界面
+ */
 public class MainActivity extends Activity {
     private static final int LOAD_SUCCESS = 0x1;
     private ListView listView;
@@ -72,6 +68,7 @@ public class MainActivity extends Activity {
         loadData();
     }
 
+    // 加载数据
     public void loadData() {
         new Thread() {
             @Override
@@ -97,7 +94,7 @@ public class MainActivity extends Activity {
         }.start();
     }
 
-
+    // 加载成功后回调
     private static class NoLeakHandler extends Handler {
         private WeakReference<MainActivity> mActivity;
 
@@ -160,6 +157,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    // 返回登录界面
     class IvExitListener implements View.OnClickListener {
 
         @Override
@@ -168,6 +166,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    // 监听发布
     class IvPublishListener implements View.OnClickListener {
 
         @Override

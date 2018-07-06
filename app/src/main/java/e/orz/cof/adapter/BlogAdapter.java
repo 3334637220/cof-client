@@ -53,8 +53,8 @@ public class BlogAdapter extends BaseAdapter {
     private List<Blog> blogList;
     private User user;
     private MainActivity mainActivity;
-    float mPosY;
-    float mPosX;
+    private float mPosY;
+    private float mPosX;
 
     public BlogAdapter(Context context, List<Blog> blogList, User user, MainActivity mainActivity) {
         this.context = context;
@@ -113,7 +113,7 @@ public class BlogAdapter extends BaseAdapter {
                     .into(ivBg);
 
         }
-
+        // 背景图滑动监听 刷新
         ivBg.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -252,7 +252,7 @@ public class BlogAdapter extends BaseAdapter {
             }
         });
 
-
+        // 评论图片事件
         ivComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -269,6 +269,8 @@ public class BlogAdapter extends BaseAdapter {
 
         final List<String> pictureList = blog.getPictures();
         ImageAdapter imageAdapter = new ImageAdapter(context, pictureList);
+
+        // 图片列表事件监听
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -289,7 +291,7 @@ public class BlogAdapter extends BaseAdapter {
         final CommentAdapter commentAdapter = new CommentAdapter(context, commentList);
         lvComment.setAdapter(commentAdapter);
 
-
+        // 评论按钮事件监听
         btComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
